@@ -1,5 +1,5 @@
-defmodule Hexpm.Web.DocsController do
-  use Hexpm.Web, :controller
+defmodule HexpmWeb.DocsController do
+  use HexpmWeb, :controller
 
   def usage(conn, _params) do
     render(conn, "usage.html", [

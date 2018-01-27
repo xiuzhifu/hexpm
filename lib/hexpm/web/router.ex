@@ -1,5 +1,5 @@
-defmodule Hexpm.Web.Router do
-  use Hexpm.Web, :router
+defmodule HexpmWeb.Router do
+  use HexpmWeb, :router
 
   @accepted_formats ~w(json elixir erlang)
 
@@ -22,7 +22,7 @@ defmodule Hexpm.Web.Router do
     plug :user_agent
     plug :authenticate
     plug :validate_url
-    plug Hexpm.Web.Plugs.Attack
+    plug HexpmWeb.Plugs.Attack
     plug :fetch_body
     plug :read_body_finally
     plug :default_repository
@@ -34,7 +34,7 @@ defmodule Hexpm.Web.Router do
     plug :user_agent
     plug :authenticate
     plug :validate_url
-    plug Hexpm.Web.Plugs.Attack
+    plug HexpmWeb.Plugs.Attack
     plug Corsica, origins: "*", allow_methods: ["HEAD", "GET"]
     plug :default_repository
   end
@@ -43,7 +43,7 @@ defmodule Hexpm.Web.Router do
     forward "/sent_emails", Bamboo.EmailPreviewPlug
   end
 
-  scope "/", Hexpm.Web do
+  scope "/", HexpmWeb do
     pipe_through :browser
 
     get "/", PageController, :index
@@ -108,13 +108,13 @@ defmodule Hexpm.Web.Router do
     get "/blog/:name", BlogController, :show
   end
 
-  scope "/", Hexpm.Web do
+  scope "/", HexpmWeb do
     get "/sitemap.xml", SitemapController, :sitemap
     get "/hexsearch.xml", OpenSearchController, :opensearch
     get "/installs/hex.ez", InstallController, :archive
   end
 
-  scope "/api", Hexpm.Web.API, as: :api do
+  scope "/api", HexpmWeb.API, as: :api do
     pipe_through :upload
 
     for prefix <- ["/", "/repos/:repository"] do
@@ -125,7 +125,7 @@ defmodule Hexpm.Web.Router do
     end
   end
 
-  scope "/api", Hexpm.Web.API, as: :api do
+  scope "/api", HexpmWeb.API, as: :api do
     pipe_through :api
 
     get "/", IndexController, :index
@@ -170,7 +170,7 @@ defmodule Hexpm.Web.Router do
   end
 
   if Mix.env in [:dev, :test, :hex] do
-    scope "/repo", Hexpm.Web do
+    scope "/repo", HexpmWeb do
       get "/registry.ets.gz", TestController, :registry
       get "/registry.ets.gz.signed", TestController, :registry_signed
       get "/names", TestController, :names
@@ -185,13 +185,13 @@ defmodule Hexpm.Web.Router do
       end
     end
 
-    scope "/api", Hexpm.Web do
+    scope "/api", HexpmWeb do
       pipe_through :api
 
       post "/repo", TestController, :repo
     end
 
-    scope "/docs", Hexpm.Web do
+    scope "/docs", HexpmWeb do
       get "/:package/:version/*page", TestController, :docs_page
       get "/sitemap.xml", TestController, :docs_sitemap
     end

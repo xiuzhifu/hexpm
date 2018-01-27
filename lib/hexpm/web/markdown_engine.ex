@@ -1,4 +1,4 @@
-defmodule Hexpm.Web.MarkdownEngine do
+defmodule HexpmWeb.MarkdownEngine do
   @behaviour Phoenix.Template.Engine
 
   def compile(path, _name) do

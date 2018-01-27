@@ -1,5 +1,5 @@
-defmodule Hexpm.Web.API.ReleaseController do
-  use Hexpm.Web, :controller
+defmodule HexpmWeb.API.ReleaseController do
+  use HexpmWeb, :controller
 
   plug :maybe_fetch_release when action in [:show]
   plug :fetch_release when action in [:delete]
@@ -43,7 +43,7 @@ defmodule Hexpm.Web.API.ReleaseController do
   end
 
   defp handle_tarball(conn, repository, package, user, body) do
-    case Hexpm.Web.ReleaseTar.metadata(body) do
+    case HexpmWeb.ReleaseTar.metadata(body) do
       {:ok, meta, checksum} ->
         Releases.publish(repository, package, user, body, meta, checksum, audit: audit_data(conn))
 

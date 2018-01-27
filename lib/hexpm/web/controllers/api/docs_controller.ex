@@ -1,5 +1,5 @@
-defmodule Hexpm.Web.API.DocsController do
-  use Hexpm.Web, :controller
+defmodule HexpmWeb.API.DocsController do
+  use HexpmWeb, :controller
 
   plug :fetch_release
   plug :authorize, [fun: &package_owner?/2, domain: "api"] when action in [:create, :delete]
@@ -20,7 +20,7 @@ defmodule Hexpm.Web.API.DocsController do
       package = conn.assigns.package
       release = conn.assigns.release
 
-      case Hexpm.Web.DocsTar.parse(body) do
+      case HexpmWeb.DocsTar.parse(body) do
         {:ok, {files, body}} ->
           Hexpm.Repository.Releases.publish_docs(package, release, files, body, audit: audit_data(conn))
           location = Hexpm.Utils.docs_tarball_url(package, release)

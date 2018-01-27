@@ -1,5 +1,5 @@
-defmodule Hexpm.Web.PackageView do
-  use Hexpm.Web, :view
+defmodule HexpmWeb.PackageView do
+  use HexpmWeb, :view
 
   def show_sort_info(nil), do: "(Sorted by name)"
   def show_sort_info(:name), do: "(Sorted by name)"

@@ -1,5 +1,5 @@
 defmodule Hexpm.Repository.RepositoryUser do
-  use Hexpm.Web, :schema
+  use HexpmWeb, :schema
 
   schema "repository_users" do
     field :role, :string

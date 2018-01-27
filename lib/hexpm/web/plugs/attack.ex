@@ -1,13 +1,13 @@
 # TODO: Don't rate limit conditional requests that return 304 Not Modified
 # NOTE: Does not rate limit accross multiple hosts
 
-defmodule Hexpm.Web.Plugs.Attack do
+defmodule HexpmWeb.Plugs.Attack do
   use PlugAttack
-  import Hexpm.Web.ControllerHelpers
+  import HexpmWeb.ControllerHelpers
   import Plug.Conn
   alias Hexpm.BlockAddress
 
-  @storage {PlugAttack.Storage.Ets, Hexpm.Web.Plugs.Attack}
+  @storage {PlugAttack.Storage.Ets, HexpmWeb.Plugs.Attack}
 
   rule "allow local", conn do
     allow conn.remote_ip == {127, 0, 0, 1}

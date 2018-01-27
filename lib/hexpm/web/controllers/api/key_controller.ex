@@ -1,5 +1,5 @@
-defmodule Hexpm.Web.API.KeyController do
-  use Hexpm.Web, :controller
+defmodule HexpmWeb.API.KeyController do
+  use HexpmWeb, :controller
 
   plug :authorize, [domain: "api"] when action != :create
   plug :authorize, [domain: "api", allow_unconfirmed: true] when action == :create
@@ -35,7 +35,7 @@ defmodule Hexpm.Web.API.KeyController do
     authing_key = conn.assigns.key
 
     if api_key?(params) and conn.assigns.auth_source == :key do
-      Hexpm.Web.AuthHelpers.error(conn, {:error, :basic_required})
+      HexpmWeb.AuthHelpers.error(conn, {:error, :basic_required})
     else
       case Keys.add(user, params, audit: audit_data(conn)) do
         {:ok, %{key: key}} ->

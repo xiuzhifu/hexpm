@@ -1,5 +1,5 @@
-defmodule Hexpm.Web.BlogView do
-  use Hexpm.Web, :view
+defmodule HexpmWeb.BlogView do
+  use HexpmWeb, :view
 
   def render("index.html", _assigns) do
     posts = Enum.flat_map(all_templates(), fn

@@ -1,5 +1,5 @@
-defmodule Hexpm.Web.API.RetirementController do
-  use Hexpm.Web, :controller
+defmodule HexpmWeb.API.RetirementController do
+  use HexpmWeb, :controller
 
   plug :maybe_fetch_release when action in [:create, :delete]
   plug :authorize, [domain: "api", fun: &maybe_package_owner?/2] when action in [:create, :delete]

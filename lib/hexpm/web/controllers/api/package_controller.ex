@@ -1,5 +1,5 @@
-defmodule Hexpm.Web.API.PackageController do
-  use Hexpm.Web, :controller
+defmodule HexpmWeb.API.PackageController do
+  use HexpmWeb, :controller
 
   plug :maybe_fetch_package when action in [:show]
   plug :maybe_authorize, [domain: "api", fun: &repository_access?/2] when action in [:show]

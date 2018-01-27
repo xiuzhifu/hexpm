@@ -1,5 +1,5 @@
-defmodule Hexpm.Web.InstallController do
-  use Hexpm.Web, :controller
+defmodule HexpmWeb.InstallController do
+  use HexpmWeb, :controller
 
   def archive(conn, params) do
     current = params["elixir"] ||

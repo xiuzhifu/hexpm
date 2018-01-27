@@ -1,5 +1,5 @@
-defmodule Hexpm.Web.BlogController do
-  use Hexpm.Web, :controller
+defmodule HexpmWeb.BlogController do
+  use HexpmWeb, :controller
 
   def index(conn, _params) do
     render(conn, "index.html", [
@@ -20,7 +20,7 @@ defmodule Hexpm.Web.BlogController do
   end
 
   defp all_slugs() do
-    Hexpm.Web.BlogView.all_templates()
+    HexpmWeb.BlogView.all_templates()
     |> Enum.map(&Path.rootname/1)
   end
 

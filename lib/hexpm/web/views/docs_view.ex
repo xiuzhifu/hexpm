@@ -1,3 +1,3 @@
-defmodule Hexpm.Web.DocsView do
-  use Hexpm.Web, :view
+defmodule HexpmWeb.DocsView do
+  use HexpmWeb, :view
 end

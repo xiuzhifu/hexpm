@@ -1,5 +1,5 @@
-defmodule Hexpm.Web.EmailController do
-  use Hexpm.Web, :controller
+defmodule HexpmWeb.EmailController do
+  use HexpmWeb, :controller
 
   def verify(conn, %{"username" => username, "email" => email, "key" => key}) do
     success = Users.verify_email(username, email, key) == :ok
@@ -12,6 +12,6 @@ defmodule Hexpm.Web.EmailController do
 
     conn
     |> put_flash(:custom_location, true)
-    |> redirect(to: Routes.page_path(Hexpm.Web.Endpoint, :index))
+    |> redirect(to: Routes.page_path(HexpmWeb.Endpoint, :index))
   end
 end

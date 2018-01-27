@@ -1,8 +1,8 @@
 defmodule Hexpm.Repository.PackageDownload do
-  use Hexpm.Web, :schema
+  use HexpmWeb, :schema
   import Hexpm.QueryAPI, only: [coalesce: 2]
 
-  @derive Hexpm.Web.Stale
+  @derive HexpmWeb.Stale
   @primary_key false
 
   schema "package_downloads" do

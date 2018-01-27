@@ -1,7 +1,7 @@
-defmodule Hexpm.Web.DashboardViewTest do
+defmodule HexpmWeb.DashboardViewTest do
   use Hexpm.ConnCase, async: true
 
-  alias Hexpm.Web.DashboardView
+  alias HexpmWeb.DashboardView
 
   test "shows verified emails as gravatar options" do
     verified_email = build(:email, email: "verified@mail.com", verified: true)

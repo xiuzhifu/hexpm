@@ -1,5 +1,5 @@
 defmodule Hexpm.Repository.Repositories do
-  use Hexpm.Web, :context
+  use HexpmWeb, :context
 
   def all_public() do
     Repo.all(from(r in Repository, where: r.public))

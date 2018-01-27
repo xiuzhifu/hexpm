@@ -51,11 +51,11 @@ config :bcrypt_elixir,
 config :porcelain,
   driver: Porcelain.Driver.Basic
 
-config :hexpm, Hexpm.Web.Endpoint,
+config :hexpm, HexpmWeb.Endpoint,
   url: [host: "localhost"],
   root: Path.dirname(__DIR__),
   secret_key_base: "Cc2cUvbm9x/uPD01xnKmpmU93mgZuht5cTejKf/Z2x0MmfqE1ZgHJ1/hSZwd8u4L",
-  render_errors: [view: Hexpm.Web.ErrorView, accepts: ~w(html json elixir erlang)]
+  render_errors: [view: HexpmWeb.ErrorView, accepts: ~w(html json elixir erlang)]
 
 config :hexpm, Hexpm.Repo,
   pool: DBConnection.Sojourn,
@@ -70,7 +70,7 @@ config :hexpm, Hexpm.Emails.Mailer,
   adapter: Hexpm.Emails.Bamboo.SESAdapter
 
 config :phoenix, :template_engines,
-  md: Hexpm.Web.MarkdownEngine
+  md: HexpmWeb.MarkdownEngine
 
 config :phoenix,
   stacktrace_depth: 20
@@ -80,9 +80,9 @@ config :phoenix, :generators,
   binary_id: false
 
 config :phoenix, :format_encoders,
-  elixir: Hexpm.Web.ElixirFormat,
-  erlang: Hexpm.Web.ErlangFormat,
-  json: Hexpm.Web.Jiffy
+  elixir: HexpmWeb.ElixirFormat,
+  erlang: HexpmWeb.ErlangFormat,
+  json: HexpmWeb.Jiffy
 
 config :mime, :types, %{
   "application/vnd.hex+json" => ["json"],
@@ -91,7 +91,7 @@ config :mime, :types, %{
 }
 
 config :ecto,
-  json_library: Hexpm.Web.Jiffy
+  json_library: HexpmWeb.Jiffy
 
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
