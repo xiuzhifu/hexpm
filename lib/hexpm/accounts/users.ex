@@ -275,10 +275,10 @@ defmodule Hexpm.Accounts.Users do
 
     cond do
       !new_email ->
-        Multi.run(Multi.new(), error_op_name, fn _ -> {:error, :unknown_email} end)
+        Multi.run(Multi.new(), error_op_name, fn _, _ -> {:error, :unknown_email} end)
 
       !new_email.verified ->
-        Multi.run(Multi.new(), error_op_name, fn _ -> {:error, :not_verified} end)
+        Multi.run(Multi.new(), error_op_name, fn _, _ -> {:error, :not_verified} end)
 
       old_email && new_email.id == old_email.id ->
         Multi.new()

@@ -40,7 +40,7 @@ defmodule Hexpm.Repository.Releases do
 
   def publish(repository, package, user, body, meta, checksum, audit: audit_data) do
     Multi.new()
-    |> Multi.run(:repository, fn _ -> {:ok, repository} end)
+    |> Multi.run(:repository, fn _, _ -> {:ok, repository} end)
     |> create_package(repository, package, user, meta)
     |> create_release(package, checksum, meta)
     |> audit_publish(audit_data)
@@ -117,8 +117,8 @@ defmodule Hexpm.Repository.Releases do
     params = %{"retirement" => params}
 
     Multi.new()
-    |> Multi.run(:repository, fn _ -> {:ok, package.repository} end)
-    |> Multi.run(:package, fn _ -> {:ok, package} end)
+    |> Multi.run(:repository, fn _, _ -> {:ok, package.repository} end)
+    |> Multi.run(:package, fn _, _ -> {:ok, package} end)
     |> Multi.update(:release, Release.retire(release, params))
     |> audit_retire(audit_data, package)
     |> Repo.transaction()
@@ -127,8 +127,8 @@ defmodule Hexpm.Repository.Releases do
 
   def unretire(package, release, audit: audit_data) do
     Multi.new()
-    |> Multi.run(:repository, fn _ -> {:ok, package.repository} end)
-    |> Multi.run(:package, fn _ -> {:ok, package} end)
+    |> Multi.run(:repository, fn _, _ -> {:ok, package.repository} end)
+    |> Multi.run(:package, fn _, _ -> {:ok, package} end)
     |> Multi.update(:release, Release.unretire(release))
     |> audit_unretire(audit_data, package)
     |> Repo.transaction()
@@ -204,11 +204,11 @@ defmodule Hexpm.Repository.Releases do
 
       multi
       |> Multi.update(:release, Release.update(release, params, checksum))
-      |> Multi.run(:action, fn _ -> {:ok, :update} end)
+      |> Multi.run(:action, fn _, _ -> {:ok, :update} end)
     else
       multi
       |> build_release(params, checksum)
-      |> Multi.run(:action, fn _ -> {:ok, :insert} end)
+      |> Multi.run(:action, fn _, _ -> {:ok, :insert} end)
     end
   end
 
@@ -219,8 +219,8 @@ defmodule Hexpm.Repository.Releases do
   end
 
   defp refresh_package_dependants(multi) do
-    Multi.run(multi, :refresh, fn _ ->
-      :ok = Hexpm.Repo.refresh_view(Hexpm.Repository.PackageDependant)
+    Multi.run(multi, :refresh, fn repo, _ ->
+      :ok = repo.refresh_view(Hexpm.Repository.PackageDependant)
       {:ok, :refresh}
     end)
   end
