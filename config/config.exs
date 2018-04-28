@@ -88,7 +88,7 @@ config :mime, :types, %{
   "application/vnd.hex+erlang" => ["erlang"]
 }
 
-config :ecto, json_library: Jason
+config :postgrex, json_library: Jason
 
 config :rollbax, enabled: false
 
