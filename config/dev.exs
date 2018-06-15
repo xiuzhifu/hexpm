@@ -45,3 +45,9 @@ config :hexpm, Hexpm.Repo,
   pool_size: 5
 
 config :hexpm, Hexpm.Emails.Mailer, adapter: Bamboo.LocalAdapter
+
+config :dotlocal,
+  service: :hexpm,
+  backend: Hexpm.Web.Endpoint,
+  http: [port: 8080],
+  https: [port: 8443]

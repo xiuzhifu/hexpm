@@ -56,7 +56,8 @@ defmodule Hexpm.MixProject do
       {:rollbax, "~> 0.5"},
       {:sbroker, "~> 1.0"},
       {:sweet_xml, "~> 0.5"},
-      {:hex_erl, github: "hexpm/hex_erl", branch: "master"}
+      {:hex_erl, github: "hexpm/hex_erl", branch: "master"},
+      {:dotlocal, github: "wojtekmach/dotlocal", only: :dev}
     ]
   end
 
