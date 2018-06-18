@@ -50,10 +50,18 @@ defmodule Hexpm.Web.API.PackageController do
   defp sort(param), do: Hexpm.Utils.safe_to_atom(param, @sort_params)
 
   defp organizations(conn) do
-    if organization = conn.assigns.organization do
-      [organization]
-    else
-      Users.all_organizations(conn.assigns.current_user)
+    cond do
+      organization = conn.assigns.organization ->
+        [organization]
+
+      user = conn.assigns.current_user ->
+        Users.all_organizations(user)
+
+      organization = conn.assigns.current_organization ->
+        [Organization.hexpm(), organization]
+
+      true ->
+        [Organization.hexpm()]
     end
   end
 end

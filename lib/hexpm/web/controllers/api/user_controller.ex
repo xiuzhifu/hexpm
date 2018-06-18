@@ -22,6 +22,7 @@ defmodule Hexpm.Web.API.UserController do
     end
   end
 
+  # TODO: hum?
   def me(conn, _params) do
     user = Users.put_organizations(conn.assigns.current_user)
 

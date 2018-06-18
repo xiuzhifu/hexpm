@@ -278,12 +278,13 @@ defmodule Hexpm.Web.ControllerHelpers do
   end
 
   def audit_data(conn) do
-    {conn.assigns.current_user, conn.assigns.user_agent}
+    user_or_organization = conn.assigns.current_user || conn.assigns.current_organization
+    {user_or_organization, conn.assigns.user_agent}
   end
 
   def password_auth(username, password) do
     case Auth.password_auth(username, password) do
-      {:ok, {user, nil, email, :password}} ->
+      {:ok, %{user: user, email: email}} ->
         if email.verified,
           do: {:ok, user},
           else: {:error, :unconfirmed}

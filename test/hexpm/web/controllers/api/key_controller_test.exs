@@ -1,15 +1,22 @@
 defmodule Hexpm.Web.API.KeyControllerTest do
   use Hexpm.ConnCase, async: true
 
+  alias Hexpm.Repo
   alias Hexpm.Accounts.{AuditLog, Key, KeyPermission}
 
   setup do
     eric = create_user("eric", "eric@mail.com", "ericeric")
     other = create_user("other", "other@mail.com", "otherother")
-    repo = insert(:organization)
-    unowned_repo = insert(:organization)
-    insert(:organization_user, organization: repo, user: eric)
-    {:ok, repo: repo, unowned_repo: unowned_repo, eric: eric, other: other}
+    organization = insert(:organization)
+    unowned_organization = insert(:organization)
+    insert(:organization_user, organization: organization, user: eric)
+
+    %{
+      organization: organization,
+      unowned_organization: unowned_organization,
+      eric: eric,
+      other: other
+    }
   end
 
   test "create api key", c do
@@ -22,29 +29,20 @@ defmodule Hexpm.Web.API.KeyControllerTest do
       |> post("api/keys", Jason.encode!(body))
 
     assert conn.status == 201
-    key = Hexpm.Repo.one!(Key.get(c.eric, "macbook"))
+    key = Repo.one!(Key.get(c.eric, "macbook"))
     assert [%KeyPermission{domain: "api"}] = key.permissions
 
-    log = Hexpm.Repo.one!(AuditLog)
+    log = Repo.one!(AuditLog)
     assert log.user_id == c.eric.id
     assert log.action == "key.generate"
     assert %{"name" => "macbook"} = log.params
   end
 
-  test "create api key requires password authentication", c do
-    key = Key.build(c.eric, %{name: "computer"}) |> Hexpm.Repo.insert!()
-
-    body = %{name: "macbook"}
-
-    build_conn()
-    |> put_req_header("content-type", "application/json")
-    |> put_req_header("authorization", key.user_secret)
-    |> post("api/keys", Jason.encode!(body))
-    |> json_response(401)
-  end
-
-  test "create repo key", c do
-    body = %{name: "macbook", permissions: [%{domain: "repository", resource: c.repo.name}]}
+  test "create organization key", c do
+    body = %{
+      name: "macbook",
+      permissions: [%{domain: "repository", resource: c.organization.name}]
+    }
 
     build_conn()
     |> put_req_header("content-type", "application/json")
@@ -52,15 +50,18 @@ defmodule Hexpm.Web.API.KeyControllerTest do
     |> post("api/keys", Jason.encode!(body))
     |> json_response(201)
 
-    key = Hexpm.Repo.one!(Key.get(c.eric, "macbook"))
-    repo_name = c.repo.name
+    key = Repo.one!(Key.get(c.eric, "macbook"))
+    repo_name = c.organization.name
     assert [%KeyPermission{domain: "repository", resource: ^repo_name}] = key.permissions
   end
 
-  test "create repo key with api key", c do
-    key = Key.build(c.eric, %{name: "computer"}) |> Hexpm.Repo.insert!()
+  test "create organization key with api key", c do
+    key = Key.build(c.eric, %{name: "computer"}) |> Repo.insert!()
 
-    body = %{name: "macbook", permissions: [%{domain: "repository", resource: c.repo.name}]}
+    body = %{
+      name: "macbook",
+      permissions: [%{domain: "repository", resource: c.organization.name}]
+    }
 
     build_conn()
     |> put_req_header("content-type", "application/json")
@@ -68,12 +69,12 @@ defmodule Hexpm.Web.API.KeyControllerTest do
     |> post("api/keys", Jason.encode!(body))
     |> json_response(201)
 
-    key = Hexpm.Repo.one!(Key.get(c.eric, "macbook"))
-    repo_name = c.repo.name
+    key = Repo.one!(Key.get(c.eric, "macbook"))
+    repo_name = c.organization.name
     assert [%KeyPermission{domain: "repository", resource: ^repo_name}] = key.permissions
   end
 
-  test "create repo key for repository unknown repository is not allowed", c do
+  test "create organization key for repository unknown repository is not allowed", c do
     body = %{
       name: "macbook",
       permissions: [%{domain: "repository", resource: "SOME_UNKNOWN_REPO"}]
@@ -85,10 +86,10 @@ defmodule Hexpm.Web.API.KeyControllerTest do
     |> post("api/keys", Jason.encode!(body))
     |> json_response(422)
 
-    refute Hexpm.Repo.one(Key.get(c.eric, "macbook"))
+    refute Repo.one(Key.get(c.eric, "macbook"))
   end
 
-  test "create repo key for all repositories", c do
+  test "create organization key for all repositories", c do
     body = %{name: "macbook", permissions: [%{domain: "repositories"}]}
 
     build_conn()
@@ -97,14 +98,14 @@ defmodule Hexpm.Web.API.KeyControllerTest do
     |> post("api/keys", Jason.encode!(body))
     |> json_response(201)
 
-    key = Hexpm.Repo.one!(Key.get(c.eric, "macbook"))
+    key = Repo.one!(Key.get(c.eric, "macbook"))
     assert [%KeyPermission{domain: "repositories", resource: nil}] = key.permissions
   end
 
   test "get key", c do
     c.eric
     |> Key.build(%{name: "macbook"})
-    |> Hexpm.Repo.insert!()
+    |> Repo.insert!()
 
     conn =
       build_conn()
@@ -121,8 +122,8 @@ defmodule Hexpm.Web.API.KeyControllerTest do
   end
 
   test "all keys", c do
-    Key.build(c.eric, %{name: "macbook"}) |> Hexpm.Repo.insert!()
-    key = Key.build(c.eric, %{name: "computer"}) |> Hexpm.Repo.insert!()
+    Key.build(c.eric, %{name: "macbook"}) |> Repo.insert!()
+    key = Key.build(c.eric, %{name: "computer"}) |> Repo.insert!()
 
     conn =
       build_conn()
@@ -149,8 +150,8 @@ defmodule Hexpm.Web.API.KeyControllerTest do
   end
 
   test "delete key", c do
-    Key.build(c.eric, %{name: "macbook"}) |> Hexpm.Repo.insert!()
-    Key.build(c.eric, %{name: "computer"}) |> Hexpm.Repo.insert!()
+    Key.build(c.eric, %{name: "macbook"}) |> Repo.insert!()
+    Key.build(c.eric, %{name: "computer"}) |> Repo.insert!()
 
     conn =
       build_conn()
@@ -165,19 +166,19 @@ defmodule Hexpm.Web.API.KeyControllerTest do
     assert body["inserted_at"]
     refute body["secret"]
     refute body["authing_key"]
-    assert Hexpm.Repo.one(Key.get(c.eric, "macbook"))
-    refute Hexpm.Repo.one(Key.get(c.eric, "computer"))
+    assert Repo.one(Key.get(c.eric, "macbook"))
+    refute Repo.one(Key.get(c.eric, "computer"))
 
-    assert Hexpm.Repo.one(Key.get_revoked(c.eric, "computer"))
+    assert Repo.one(Key.get_revoked(c.eric, "computer"))
 
-    log = Hexpm.Repo.one!(AuditLog)
+    log = Repo.one!(AuditLog)
     assert log.user_id == c.eric.id
     assert log.action == "key.remove"
     assert %{"name" => "computer"} = log.params
   end
 
   test "delete current key notifies client", c do
-    key = Key.build(c.eric, %{name: "current"}) |> Hexpm.Repo.insert!()
+    key = Key.build(c.eric, %{name: "current"}) |> Repo.insert!()
 
     conn =
       build_conn()
@@ -192,11 +193,11 @@ defmodule Hexpm.Web.API.KeyControllerTest do
     assert body["inserted_at"]
     refute body["secret"]
     assert body["authing_key"]
-    refute Hexpm.Repo.one(Key.get(c.eric, "current"))
+    refute Repo.one(Key.get(c.eric, "current"))
 
-    assert Hexpm.Repo.one(Key.get_revoked(c.eric, "current"))
+    assert Repo.one(Key.get_revoked(c.eric, "current"))
 
-    log = Hexpm.Repo.one!(AuditLog)
+    log = Repo.one!(AuditLog)
     assert log.user_id == c.eric.id
     assert log.action == "key.remove"
     assert %{"name" => "current"} = log.params
@@ -212,8 +213,8 @@ defmodule Hexpm.Web.API.KeyControllerTest do
   end
 
   test "delete all keys", c do
-    key_a = Key.build(c.eric, %{name: "key_a"}) |> Hexpm.Repo.insert!()
-    key_b = Key.build(c.eric, %{name: "key_b"}) |> Hexpm.Repo.insert!()
+    key_a = Key.build(c.eric, %{name: "key_a"}) |> Repo.insert!()
+    key_b = Key.build(c.eric, %{name: "key_b"}) |> Repo.insert!()
 
     conn =
       build_conn()
@@ -228,15 +229,15 @@ defmodule Hexpm.Web.API.KeyControllerTest do
     assert body["inserted_at"]
     refute body["secret"]
     assert body["authing_key"]
-    refute Hexpm.Repo.one(Key.get(c.eric, "key_a"))
-    refute Hexpm.Repo.one(Key.get(c.eric, "key_b"))
+    refute Repo.one(Key.get(c.eric, "key_a"))
+    refute Repo.one(Key.get(c.eric, "key_b"))
 
-    assert Hexpm.Repo.one(Key.get_revoked(c.eric, "key_a"))
-    assert Hexpm.Repo.one(Key.get_revoked(c.eric, "key_b"))
+    assert Repo.one(Key.get_revoked(c.eric, "key_a"))
+    assert Repo.one(Key.get_revoked(c.eric, "key_b"))
 
     assert [log_a, log_b] =
              AuditLog
-             |> Hexpm.Repo.all()
+             |> Repo.all()
              |> Enum.sort_by(fn %{params: %{"name" => name}} -> name end)
 
     assert log_a.user_id == c.eric.id
@@ -259,7 +260,7 @@ defmodule Hexpm.Web.API.KeyControllerTest do
   end
 
   test "key authorizes", c do
-    key = Key.build(c.eric, %{name: "macbook"}) |> Hexpm.Repo.insert!()
+    key = Key.build(c.eric, %{name: "macbook"}) |> Repo.insert!()
 
     conn =
       build_conn()
